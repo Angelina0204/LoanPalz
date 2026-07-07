@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoanPalz | Alternative Credit Scoring System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+    --bg-color: #f8f8f8;
+    --card-light: #ffffff;
+    --card-dark: #111111;
+    --text-main: #0a0a0a;
+    --text-muted: #5a5a5a;
+    --text-light: #f8f8f8;
+    --text-muted-light: #a0a0a0;
+    --accent: #56B33B;
+    --accent-hover: #45962e;
+    --border-radius: 20px;
+    --transition: all 0.3s ease;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Manrope', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-light);
+    padding: 20px 5vw;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: var(--transition);
+}
+
+.navbar.scrolled {
+    box-shadow: 0 4px 30px rgba(0,0,0,0.05);
+    padding: 15px 5vw;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text-main);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-dot {
+    width: 12px;
+    height: 12px;
+    background-color: var(--accent);
+    border-radius: 50%;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 32px;
+}
+
+.nav-links a {
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: var(--transition);
+}
+
+.nav-links a:hover {
+    color: var(--accent);
+}
+
+.hero {
+    padding: 100px 5vw;
+    text-align: center;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.hero h1 {
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 24px;
+}
+
+.hero p {
+    font-size: 20px;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 16px;
+    transition: var(--transition);
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: var(--card-light);
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+}
+
+.container {
+    padding: 40px 5vw;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 24px;
+    margin-bottom: 60px;
+    scroll-margin-top: 100px;
+}
+
+.bento-card {
+    background: var(--card-light);
+    border-radius: var(--border-radius);
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+}
+
+.bento-card.dark {
+    background: var(--card-dark);
+    color: var(--text-light);
+}
+
+.bento-card.dark p {
+    color: var(--text-muted-light);
+}
+
+.col-span-3 { grid-column: span 3; }
+.col-span-4 { grid-column: span 4; }
+.col-span-6 { grid-column: span 6; }
+.col-span-8 { grid-column: span 8; }
+.col-span-12 { grid-column: span 12; }
+
+@media (max-width: 1024px) {
+    .col-span-3, .col-span-4, .col-span-6, .col-span-8 { grid-column: span 12; }
+}
+
+.bento-card h2 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+}
+
+.bento-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.bento-card p {
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.pill {
+    display: inline-block;
+    padding: 6px 16px;
+    background: var(--card-dark);
+    color: var(--text-light);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    align-self: flex-start;
+}
+
+.bento-card.dark .pill {
+    background: var(--card-light);
+    color: var(--card-dark);
+}
+
+.list-styled {
+    list-style: none;
+    margin-bottom: 20px;
+}
+
+.list-styled li {
+    padding: 12px 0;
+    border-bottom: 1px solid #eaeaea;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+}
+
+.bento-card.dark .list-styled li {
+    border-bottom: 1px solid #333;
+}
+
+.list-styled li:last-child {
+    border-bottom: none;
+}
+
+.list-styled li::before {
+    content: "→";
+    color: var(--accent);
+    font-weight: bold;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    padding: 16px 20px;
+    text-align: left;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.bento-card.dark th, .bento-card.dark td {
+    border-bottom: 1px solid #333;
+}
+
+th {
+    font-weight: 700;
+    background-color: rgba(0,0,0,0.02);
+}
+
+.bento-card.dark th {
+    background-color: rgba(255,255,255,0.05);
+}
+
+.highlight-row {
+    background-color: rgba(86, 179, 59, 0.1);
+    border-left: 4px solid var(--accent);
+}
+
+.formula-box {
+    background: rgba(0,0,0,0.04);
+    padding: 16px;
+    border-radius: 12px;
+    font-family: monospace;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    color: var(--text-main);
+}
+
+.bento-card.dark .formula-box {
+    background: rgba(255,255,255,0.1);
+    color: var(--text-light);
+}
+
+.code-block {
+    background: #000;
+    color: #0cc789;
+    padding: 16px;
+    border-radius: 12px;
+    font-family: monospace;
+    font-size: 14px;
+    white-space: pre-wrap;
+    margin-bottom: 16px;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    margin-top: 20px;
+    flex-grow: 1;
+}
+
+.arch-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.arch-item {
+    background: rgba(255,255,255,0.05);
+    padding: 16px 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid var(--accent);
+}
+
+.footer {
+    background: var(--card-dark);
+    color: var(--text-light);
+    padding: 80px 5vw;
+    text-align: center;
+    margin-top: 80px;
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar" id="navbar">
+    <a href="#" class="logo">
+        <div class="logo-dot"></div>
+        LoanPalz
+    </a>
+    <ul class="nav-links">
+        <li><a href="#overview">1. Overview</a></li>
+        <li><a href="#methodology">2. Methodology</a></li>
+        <li><a href="#models">3. Models</a></li>
+        <li><a href="#indices">4. Indices</a></li>
+        <li><a href="#fairness">5. Fairness</a></li>
+        <li><a href="#engine">6. Engine</a></li>
+    </ul>
+</nav>
+
+<section class="hero">
+    <h1>COMPLETE RESEARCH STRUCTURE</h1>
+    <p>A hybrid credit scoring framework combining Machine Learning, Behavioral Finance Indicators, Fairness Mitigation, Explainable AI, and Rule-based Decision Logic.</p>
+    <a href="#overview" class="btn btn-primary nav-scroll">Explore the Architecture</a>
+</section>
+
+<div class="container">
+
+    <div class="bento-grid" id="overview">
+        <div class="bento-card col-span-12 dark">
+            <h2>1. System Overview & Problem Statement</h2>
+            <p>LoanPalz implements a hybrid AI-based credit scoring framework that integrates machine learning predictions with behavioral financial analysis and rule-based decision logic. The system evaluates borrower creditworthiness by combining traditional financial indicators with newly designed behavioral credit indices to produce transparent, interpretable, and fair credit decisions.</p>
+            <p>Traditional credit scoring systems rely heavily on historical banking data. However, 1.4+ billion adults globally lack formal credit histories, leading to severe financial exclusion. Conventional models are rigid, black-box systems that often exhibit disparate impact across income groups and lack domain-driven financial reasoning.</p>
+        </div>
+        
+        <div class="bento-card col-span-4">
+            <span class="pill">Core Problem</span>
+            <h3>Financial Exclusion & Rigidity</h3>
+            <ul class="list-styled">
+                <li>1.4+ billion adults globally lack access to formal credit</li>
+                <li>Traditional models require past credit records</li>
+                <li>Depend solely on static financial history</li>
+                <li>Ignore behavioral financial patterns</li>
+            </ul>
+        </div>
+
+        <div class="bento-card col-span-4">
+            <span class="pill">Core Problem</span>
+            <h3>Bias & Lack of Transparency</h3>
+            <ul class="list-styled">
+                <li>Income groups treated differently (Disparate impact)</li>
+                <li>Black-box ML models yield low trust</li>
+                <li>Pure statistical models lack domain knowledge integration</li>
+            </ul>
+        </div>
+
+        <div class="bento-card col-span-4 dark">
+            <span class="pill">System Architecture</span>
+            <h3>Complete Pipeline</h3>
+            <div class="arch-flow" style="margin-top: 10px;">
+                <div class="arch-item"><span>Raw Borrower Input</span> <span>↓</span></div>
+                <div class="arch-item"><span>Data Preprocessing</span> <span>↓</span></div>
+                <div class="arch-item"><span>Behavioral Computations</span> <span>↓</span></div>
+                <div class="arch-item"><span>ML Risk Prediction</span> <span>↓</span></div>
+                <div class="arch-item"><span>Hybrid Risk Adjustment</span> <span>↓</span></div>
+                <div class="arch-item" style="border-left-color: #fff; background: var(--accent); color: #000;"><span>Credit Score Generation</span> <span>★</span></div>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="bento-grid" id="methodology">
+        <div class="bento-card col-span-12">
+            <h2>2. Methodology & Data Preprocessing</h2>
+        </div>
+
+        <div class="bento-card col-span-6">
+            <h3>Step 1 — Dataset Selection</h3>
+            <ul class="list-styled">
+                <li><strong>Dataset Used:</strong> Give Me Some Credit (Kaggle)</li>
+                <li><strong>Training samples:</strong> 150,000</li>
+                <li><strong>Target:</strong> SeriousDlqin2yrs (default indicator)</li>
+            </ul>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Class</th><th>Proportion</th></tr></thead>
+                    <tbody>
+                        <tr><td>Non-default</td><td>93.3%</td></tr>
+                        <tr><td>Default</td><td>6.7%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="color: #d9381e; font-weight: bold;">Problem: Severe class imbalance detected.</p>
+        </div>
+
+        <div class="bento-card col-span-6">
+            <h3>Step 2 — Imputation & Scaling</h3>
+            <p><strong>Missing value handling:</strong> MonthlyIncome & NumberOfDependents → median imputation. (Reason: robust to outliers, preserves distribution).</p>
+            <p><strong>Feature Scaling:</strong> Standardization applied to improve model convergence and ensure comparable feature scales.</p>
+            <div class="formula-box">z = (x − μ) / σ</div>
+        </div>
+
+        <div class="bento-card col-span-12">
+            <h3>Step 3 — Class Imbalance Handling (SMOTE)</h3>
+            <p>SMOTE generates synthetic minority samples to prevent majority class bias.</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Stage</th><th>Class 0 (Non-Default)</th><th>Class 1 (Default)</th></tr></thead>
+                    <tbody>
+                        <tr><td>Original</td><td>93%</td><td>7%</td></tr>
+                        <tr><td>After SMOTE</td><td>111,979</td><td>111,979</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="color: var(--accent); font-weight: bold;">Impact: Improved recall for defaults, ensuring balanced learning.</p>
+        </div>
+        
+    </div>
+
+    <div class="bento-grid" id="models">
+        <div class="bento-card col-span-12">
+            <h2>3. Baseline vs Enhanced Model & ML Prediction</h2>
+            <p>The system evaluates borrower default probability using gradient boosting, outputting a <strong>Base Risk Probability ∈ [0,1]</strong>.</p>
+        </div>
+
+        <div class="bento-card col-span-6">
+            <h3>Baseline Model (Initial System)</h3>
+            <p>Initially trained using 10 traditional financial features:</p>
+            <ul class="list-styled">
+                <li>revolving credit utilization</li>
+                <li>age</li>
+                <li>late payment counts</li>
+                <li>debt ratio</li>
+                <li>monthly income</li>
+                <li>credit lines</li>
+                <li>real estate loans</li>
+                <li>dependents</li>
+            </ul>
+            <p><strong>Baseline Performance:</strong> AUC ≈ 0.85, limited behavioral interpretability, no domain-driven financial reasoning.</p>
+        </div>
+
+        <div class="bento-card col-span-6 dark">
+            <h3>Enhanced Model (Proposed System)</h3>
+            <p>Five engineered behavioral features were added, increasing the feature space:</p>
+            <div class="formula-box" style="text-align: center; font-size: 24px;">10 → 15 features</div>
+            <p><strong>Enhanced Impact:</strong> Improved interpretability, domain-driven decision logic, more realistic credit assessment, and significant research novelty.</p>
+        </div>
+
+        <div class="bento-card col-span-12">
+            <h3>Model Comparison Results</h3>
+            <div class="chart-container">
+                <canvas id="modelComparisonChart"></canvas>
+            </div>
+            <div class="table-wrapper" style="margin-top: 20px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Accuracy</th>
+                            <th>Precision</th>
+                            <th>Recall</th>
+                            <th>F1</th>
+                            <th>AUC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Logistic Regression</td><td>0.755</td><td>0.170</td><td>0.680</td><td>0.270</td><td>0.795</td></tr>
+                        <tr><td>Random Forest</td><td>0.915</td><td>0.357</td><td>0.347</td><td>0.352</td><td>0.823</td></tr>
+                        <tr><td>XGBoost</td><td>0.919</td><td>0.390</td><td>0.380</td><td>0.385</td><td>0.842</td></tr>
+                        <tr><td>LightGBM</td><td>0.931</td><td>0.477</td><td>0.295</td><td>0.364</td><td>0.852</td></tr>
+                        <tr class="highlight-row"><td><strong>CatBoost</strong></td><td><strong>0.930</strong></td><td><strong>0.464</strong></td><td><strong>0.325</strong></td><td><strong>0.382</strong></td><td><strong>0.854</strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p><strong>Final Selection → CatBoost:</strong> Chosen for highest AUC (0.854), strong performance on tabular financial data, robustness to feature interactions, reduced overfitting, and high predictive accuracy.</p>
+        </div>
+        
+    </div>
+
+    <div class="bento-grid" id="indices">
+        <div class="bento-card col-span-12">
+            <h2>4. Behavioral Credit Indices (Core Innovation)</h2>
+            <p>The proposed system introduces five behavioral indicators derived from financial theory and lending practices. These indices transform raw financial attributes into interpretable behavioral measures.</p>
+        </div>
+
+        <div class="bento-card col-span-4">
+            <h3>4.1 Financial Stability Index</h3>
+            <p><strong>Purpose:</strong> Measures long-term financial sustainability of the borrower.</p>
+            <div class="formula-box">MonthlyIncome / (DebtRatio × 1000 + NumberOfDependents + 1)</div>
+            <p><strong>Interpretation:</strong> Higher value → stronger financial stability. Lower value → higher repayment risk. Estimates capacity to manage debt relative to income.</p>
+        </div>
+
+        <div class="bento-card col-span-4">
+            <h3>4.2 Payment Discipline Score</h3>
+            <p><strong>Purpose:</strong> Measures repayment reliability based on historical delays.</p>
+            <div class="formula-box">1 / (Late30 + Late60 + Late90 + 1)</div>
+            <p><strong>Interpretation:</strong> Close to 1 → reliable borrower. Close to 0 → frequent delays. Captures behavioral repayment patterns.</p>
+        </div>
+
+        <div class="bento-card col-span-4">
+            <h3>4.3 Debt Stress Index</h3>
+            <p><strong>Purpose:</strong> Quantifies financial pressure from debt obligations.</p>
+            <div class="formula-box">DebtRatio × CreditUtilization × (OpenCreditLines + 1)</div>
+            <p><strong>Interpretation:</strong> Higher value → greater financial stress. Lower value → manageable debt. Represents combined borrowing pressure.</p>
+        </div>
+
+        <div class="bento-card col-span-6">
+            <h3>4.4 Credit Utilization Risk</h3>
+            <p><strong>Purpose:</strong> Represents borrower dependence on credit resources.</p>
+            <div class="formula-box">CreditUtilizationRisk = RevolvingUtilization</div>
+            <p><strong>Interpretation:</strong> Higher utilization indicates higher risk exposure.</p>
+        </div>
+
+        <div class="bento-card col-span-6">
+            <h3>4.5 Credit Experience Score</h3>
+            <p><strong>Purpose:</strong> Measures borrower credit experience.</p>
+            <div class="formula-box">CreditExperience = OpenCreditLines + RealEstateLoans</div>
+            <p><strong>Interpretation:</strong> Higher experience indicates stronger credit history.</p>
+        </div>
+
+        <div class="bento-card col-span-12">
+            <h3>Behavioral Impact Results: Baseline vs Enhanced CatBoost</h3>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="behavioralImpactChart"></canvas>
+            </div>
+            <div class="table-wrapper" style="margin-top: 20px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Model</th>
+                            <th>Accuracy</th>
+                            <th>Precision</th>
+                            <th>Recall</th>
+                            <th>F1</th>
+                            <th>AUC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Baseline CatBoost</td><td>0.9297</td><td>0.4637</td><td>0.3247</td><td>0.3819</td><td>0.8544</td></tr>
+                        <tr class="highlight-row"><td><strong>Behavioral CatBoost</strong></td><td><strong>0.9313</strong></td><td><strong>0.4804</strong></td><td><strong>0.3366</strong></td><td><strong>0.3959</strong></td><td><strong>0.8528</strong></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </div>
+
+    <div class="bento-grid" id="fairness">
+        <div class="bento-card col-span-12">
+            <h2>5. Fairness & Bias Analysis</h2>
+        </div>
+        
+        <div class="bento-card col-span-6">
+            <h3>Bias Detection (Before Mitigation)</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Group</th><th>Default Rate</th></tr></thead>
+                    <tbody>
+                        <tr><td>Low Income</td><td>7.67%</td></tr>
+                        <tr><td>Medium Income</td><td>4.27%</td></tr>
+                        <tr><td>High Income</td><td>2.09%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p><strong>Disparate Impact Ratio:</strong> 0.0209 / 0.0767 = 0.27</p>
+            <p style="color: #d9381e; font-weight: bold;">Below 0.8 equitable threshold → indicates possible bias.</p>
+        </div>
+
+        <div class="bento-card col-span-6">
+            <h3>Bias Mitigation (After Mitigation)</h3>
+            <p><strong>Method:</strong> Sample reweighting and fairness-aware training.</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Group</th><th>Accuracy</th><th>Default Rate</th></tr></thead>
+                    <tbody>
+                        <tr><td>Low Income</td><td>0.916</td><td style="color: var(--accent); font-weight: bold;">3.2%</td></tr>
+                        <tr><td>Medium Income</td><td>0.941</td><td>2.17%</td></tr>
+                        <tr><td>High Income</td><td>0.953</td><td>0.91%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p><strong>Impact:</strong> Low-income disparity reduced significantly, model fairness improved, and overall performance maintained.</p>
+        </div>
+        
+    </div>
+
+    <div class="bento-grid" id="engine">
+        <div class="bento-card col-span-12 dark">
+            <h2>6. Hybrid Risk Decision System & Scoring</h2>
+            <p>To increase interpretability and align predictions with financial domain knowledge, a rule-based adjustment layer is applied after model prediction to create a hybrid AI decision framework.</p>
+        </div>
+
+        <div class="bento-card col-span-6 dark">
+            <h3>6.1 Adjustment Rules</h3>
+            <p>The system modifies the predicted base risk using behavioral thresholds:</p>
+            <div class="code-block">If PaymentDiscipline < 0.5:
+    Risk += 0.10
+
+If FinancialStability > threshold:
+    Risk -= adjustment
+
+If DebtStress > threshold:
+    Risk += adjustment
+
+If CreditExperience > threshold:
+    Risk -= adjustment</div>
+            <p>These rules introduce domain knowledge and improve decision transparency.</p>
+        </div>
+
+        <div class="bento-card col-span-6 dark">
+            <h3>6.2 Final Risk & Credit Score Generation</h3>
+            <p>The final risk value is constrained between 0 and 1, then mapped to mimic industry credit scoring ranges.</p>
+            <div class="formula-box">Final Risk = Base Model Risk + Behavioral Adjustments</div>
+            <div class="formula-box" style="color: var(--accent);">Credit Score = (1 − FinalRisk) × 600 + 300</div>
+            <p><strong>Score Range:</strong> 300 – 900</p>
+            
+            <h3 style="margin-top: 20px;">6.3 Risk Classification</h3>
+            <ul class="list-styled" style="margin-bottom: 0;">
+                <li>0 – 0.3 → Low Risk</li>
+                <li>0.3 – 0.6 → Medium Risk</li>
+                <li>> 0.6 → High Risk</li>
+            </ul>
+        </div>
+        
+
+        <div class="bento-card col-span-12">
+            <h2>7. Explainability, Transparency & Research Contributions</h2>
+            <p>The system provides complete transparency by exposing behavioral feature values, intermediate calculations, rule adjustments applied, and final risk reasoning. This improves trust and regulatory compliance.</p>
+            <h3 style="margin-top: 20px;">Key Research Contributions</h3>
+            <ul class="list-styled">
+                <li>behavioral financial feature engineering framework</li>
+                <li>hybrid AI + rule-based credit scoring</li>
+                <li>interpretable decision pipeline</li>
+                <li>fairness-aware design</li>
+                <li>closed-loop learning architecture</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<footer class="footer">
+    <h2>Eradicating Financial Exclusion.</h2>
+    <p style="color: var(--text-muted-light); max-width: 600px; margin: 0 auto;">
+        Empowering the unbanked through behavioral insights, intelligent logic, and an uncompromising commitment to fairness.
+    </p>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    const scrollLinks = document.querySelectorAll('.nav-links a, .nav-scroll');
+    scrollLinks.forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href');
+            const targetSection = document.querySelector(targetId);
+            if(targetSection) {
+                targetSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    Chart.defaults.font.family = "'Manrope', sans-serif";
+    Chart.defaults.color = '#5a5a5a';
+
+    const ctx1 = document.getElementById('modelComparisonChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: ['Accuracy', 'Precision', 'Recall', 'F1 Score', 'AUC'],
+            datasets: [
+                {
+                    label: 'Logistic Regression',
+                    data: [0.755, 0.170, 0.680, 0.270, 0.795],
+                    backgroundColor: '#e0e0e0'
+                },
+                {
+                    label: 'Random Forest',
+                    data: [0.915, 0.357, 0.347, 0.352, 0.823],
+                    backgroundColor: '#b0b0b0'
+                },
+                {
+                    label: 'XGBoost',
+                    data: [0.919, 0.390, 0.380, 0.385, 0.842],
+                    backgroundColor: '#5a5a5a'
+                },
+                {
+                    label: 'LightGBM',
+                    data: [0.931, 0.477, 0.295, 0.364, 0.852],
+                    backgroundColor: '#111111'
+                },
+                {
+                    label: 'CatBoost (Selected)',
+                    data: [0.930, 0.464, 0.325, 0.382, 0.854],
+                    backgroundColor: '#56B33B'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top', labels: { font: { weight: '600' } } }
+            },
+            scales: {
+                y: { beginAtZero: true, max: 1.0, grid: { color: '#eaeaea' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    const ctx2 = document.getElementById('behavioralImpactChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Accuracy', 'Precision', 'Recall', 'F1 Score', 'AUC'],
+            datasets: [
+                {
+                    label: 'Baseline CatBoost',
+                    data: [0.9297, 0.4637, 0.3247, 0.3819, 0.8544],
+                    backgroundColor: '#111111'
+                },
+                {
+                    label: 'Behavioral CatBoost',
+                    data: [0.9313, 0.4804, 0.3366, 0.3959, 0.8528],
+                    backgroundColor: '#56B33B'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top', labels: { font: { weight: '600' } } }
+            },
+            scales: {
+                y: { min: 0.2, max: 1.0, grid: { color: '#eaeaea' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,677 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+/* Inheriting the exact aesthetic from your home page review */
+:root {
+    --bg-color: #f8f8f8;
+    --card-light: #ffffff;
+    --card-dark: #111111;
+    --text-main: #0a0a0a;
+    --text-muted: #5a5a5a;
+    --text-light: #f8f8f8;
+    --text-muted-light: #a0a0a0;
+    --accent: #56B33B;
+    --accent-hover: #45962e;
+    --border-radius: 20px;
+    --transition: all 0.3s ease;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: 'Manrope', sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+.container {
+    padding: 60px 5vw;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.page-header {
+    margin-bottom: 40px;
+}
+
+.page-header h1 {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+}
+
+.page-header p {
+    font-size: 18px;
+    color: var(--text-muted);
+}
+
+.bento-card {
+    background: var(--card-light);
+    border-radius: var(--border-radius);
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    margin-bottom: 30px;
+}
+
+.bento-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Form Styles */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-input {
+    padding: 16px 20px;
+    border: 1px solid #eaeaea;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    background: var(--bg-color);
+    color: var(--text-main);
+    transition: var(--transition);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--card-light);
+    box-shadow: 0 0 0 4px rgba(86, 179, 59, 0.1);
+}
+
+.btn-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: var(--card-light);
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text-main);
+    border: 2px solid #eaeaea;
+}
+
+.btn-outline:hover {
+    border-color: var(--text-main);
+}
+
+/* Results Section */
+.result-section {
+    display: none;
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.score-hero {
+    background: rgba(86, 179, 59, 0.05);
+    border: 1px solid rgba(86, 179, 59, 0.2);
+    text-align: center;
+    padding: 60px 40px;
+}
+
+.score-display {
+    font-size: 80px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 16px;
+    letter-spacing: -2px;
+}
+
+.risk-label {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.pill {
+    display: inline-block;
+    padding: 6px 16px;
+    background: var(--card-dark);
+    color: var(--text-light);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+/* Enhanced Micro-Cards for Behaviors */
+.behavior-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+.micro-card {
+    background: var(--card-light);
+    border: 1px solid #eaeaea;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+
+.mc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.mc-header h4 {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.mc-result {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent);
+    background: rgba(86, 179, 59, 0.1);
+    padding: 4px 12px;
+    border-radius: 8px;
+}
+
+.mc-theory {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.mc-math-box {
+    background: var(--bg-color);
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.math-row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.math-row:last-child {
+    margin-bottom: 0;
+}
+
+.math-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.math-code {
+    font-family: monospace;
+    font-size: 14px;
+    color: var(--text-main);
+    background: var(--card-light);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #eaeaea;
+    overflow-x: auto;
+}
+
+.mc-interp {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--card-dark);
+    border-left: 4px solid var(--accent);
+    padding-left: 12px;
+}
+
+.data-highlight {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text-main);
+    display: block;
+    margin-top: 8px;
+}
+
+.rule-list {
+    list-style: none;
+}
+
+.rule-list li {
+    background: var(--bg-color);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--accent);
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+pre.code-block {
+    background: var(--bg-color);
+    padding: 24px;
+    border-radius: 16px;
+    font-family: monospace;
+    font-size: 14px;
+    color: var(--text-main);
+    overflow-x: auto;
+    border: 1px solid #eaeaea;
+}
+
+/* Chart Container for SHAP */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+    .behavior-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Credit Scoring Engine</h1>
+        <p>Enter borrower metrics below to generate a transparent, AI-driven credit assessment.</p>
+    </div>
+
+    <div class="bento-card">
+        <h3>Borrower Details</h3>
+        <form id="scoreForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Credit Utilization</label>
+                    <input type="number" step="0.01" name="revolving_utilization" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" name="age" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Debt Ratio</label>
+                    <input type="number" step="0.01" name="debt_ratio" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Monthly Income</label>
+                    <input type="number" name="monthly_income" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Open Credit Lines</label>
+                    <input type="number" name="open_credit_lines" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Real Estate Loans</label>
+                    <input type="number" name="real_estate_loans" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Dependents</label>
+                    <input type="number" name="dependents" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Late Payments (30-59 days)</label>
+                    <input type="number" name="late_30_59" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Late Payments (60-89 days)</label>
+                    <input type="number" name="late_60_89" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label>Late Payments (90+ days)</label>
+                    <input type="number" name="late_90" class="form-input" required>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Calculate Credit Score</button>
+                <button type="button" id="sampleBtn" class="btn btn-outline">Load Sample Data</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="resultBox" class="result-section">
+
+        <div class="bento-card score-hero">
+            <span class="pill" style="background: var(--accent); color: white;">Prediction Result</span>
+            <div class="score-display" id="creditScore"></div>
+            <div class="risk-label">Risk Category: <span id="riskCategory"></span></div>
+        </div>
+
+        <h2 style="font-size: 28px; font-weight: 800; margin: 60px 0 30px;">Step-by-Step Decision Explanation</h2>
+
+        <div class="bento-card">
+            <h3><span style="color:var(--accent);">1️⃣</span> Input Summary</h3>
+            <pre id="inputSummary" class="code-block"></pre>
+        </div>
+
+        <div class="bento-card" style="background: transparent; box-shadow: none; padding: 0;">
+            <h3 style="margin-bottom: 10px;"><span style="color:var(--accent);">2️⃣</span> Behavioral Feature Calculations</h3>
+            <p style="color: var(--text-muted); margin-bottom: 30px; font-weight: 500;">Instead of relying solely on static numbers, our system translates raw inputs into behavioral indices that reflect true financial habits. Here is exactly how those numbers were derived.</p>
+            <div id="behaviorCalc" class="behavior-grid"></div>
+        </div>
+
+        <div class="bento-card">
+            <h3><span style="color:var(--accent);">3️⃣</span> Machine Learning Prediction</h3>
+            <div style="display: flex; gap: 60px; flex-wrap: wrap;">
+                <div>
+                    <span style="color: var(--text-muted); font-size: 13px; font-weight: 700; text-transform: uppercase;">Production Model</span>
+                    <span class="data-highlight" id="modelName"></span>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); font-size: 13px; font-weight: 700; text-transform: uppercase;">Base Default Probability</span>
+                    <span class="data-highlight" id="baseRisk" style="color: var(--accent);"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bento-card">
+            <h3><span style="color:var(--accent);">4️⃣</span> Hybrid Rule Engine</h3>
+            <ul id="ruleList" class="rule-list" style="margin-bottom: 30px;"></ul>
+            <div style="padding-top: 30px; border-top: 1px solid #eaeaea;">
+                <span style="color: var(--text-muted); font-size: 13px; font-weight: 700; text-transform: uppercase;">Adjusted Final Risk</span>
+                <span class="data-highlight" id="adjustedRisk" style="color: var(--text-main);"></span>
+            </div>
+        </div>
+
+        <div class="bento-card bento-card dark" style="background: var(--card-dark); color: white;">
+            <h3 style="color: white;"><span style="color:var(--accent);">5️⃣</span> Final Decision</h3>
+            <div style="display: grid; gap: 24px;">
+                <div>
+                    <span style="color: var(--text-muted-light); font-size: 13px; font-weight: 700; text-transform: uppercase;">Final Credit Score</span>
+                    <span class="data-highlight" id="finalScore" style="color: var(--accent);"></span>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted-light); font-size: 13px; font-weight: 700; text-transform: uppercase;">Decision Summary</span>
+                    <p id="decisionSummary" style="font-size: 18px; font-weight: 600; margin-top: 8px; color: white;"></p>
+                </div>
+            </div>
+        </div>
+
+         <div class="bento-card" style="background: var(--bg-color);">
+            <h3><span style="color:var(--accent);">6️⃣</span> Local Individual SHAP Analysis</h3>
+            <p style="color: var(--text-muted); font-weight: 500; margin-bottom: 20px;">
+                Visualizing how this specific borrower's financial behaviors pushed their risk higher (<span style="color: #d9381e; font-weight: bold;">Red</span>) or lower (<span style="color: var(--accent); font-weight: bold;">Green</span>) compared to the baseline population.
+            </p>
+            
+            <div class="chart-container">
+                <canvas id="shapLocalChart"></canvas>
+            </div>
+            
+            <div id="shapExplanation" style="margin-top: 20px;">
+                 <ul id="shapList" class="rule-list"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// ===== SAMPLE DATA =====
+document.getElementById("sampleBtn").onclick = function() {
+    const r = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+    const f = document.getElementById("scoreForm");
+    
+    f.revolving_utilization.value = (Math.random() * 0.9).toFixed(2);
+    f.age.value = r(21, 65);
+    f.late_30_59.value = r(0, 3);
+    f.debt_ratio.value = (Math.random() * 0.8).toFixed(2);
+    f.monthly_income.value = r(1000, 15000);
+    f.open_credit_lines.value = r(1, 10);
+    f.late_90.value = r(0, 2);
+    f.real_estate_loans.value = r(0, 3);
+    f.late_60_89.value = r(0, 2);
+    f.dependents.value = r(0, 4);
+};
+
+// ===== FORM SUBMIT =====
+document.getElementById("scoreForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((v, k) => data[k] = Number(v));
+
+    try {
+        const res = await fetch("/api/score/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const json = await res.json();
+
+        if (!res.ok) {
+            alert("Error: " + json.error);
+            return;
+        }
+
+        const result = json.result;
+
+        // Display results block smoothly
+        const resultBox = document.getElementById("resultBox");
+        resultBox.style.display = "block";
+        setTimeout(() => {
+            resultBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+
+        // ===== FINAL RESULT HERO =====
+        document.getElementById("creditScore").innerText = result.final_decision.credit_score;
+        document.getElementById("riskCategory").innerText = result.final_decision.risk_category;
+
+        const cat = result.final_decision.risk_category.toLowerCase();
+        const scoreElem = document.getElementById("creditScore");
+        const catElem = document.getElementById("riskCategory");
+        
+        if(cat.includes("high")) {
+            scoreElem.style.color = "#d9381e";
+            catElem.style.color = "#d9381e";
+        } else if (cat.includes("medium")) {
+            scoreElem.style.color = "#f39c12";
+            catElem.style.color = "#f39c12";
+        } else {
+            scoreElem.style.color = "var(--accent)";
+            catElem.style.color = "var(--accent)";
+        }
+
+        // ===== STEP 1: INPUT SUMMARY =====
+        document.getElementById("inputSummary").innerText = JSON.stringify(result.input_summary, null, 2);
+
+        // ===== STEP 2: BEHAVIORAL CALC (ENHANCED) =====
+        const bc = result.behavioral_calculation;
+        let html = "";
+        
+        for (let key in bc) {
+            let title = key.replace(/_/g, " ").toUpperCase();
+            
+            // Map the theory based on the key name
+            let theoryText = "Calculates behavioral patterns from raw financial inputs.";
+            if(key.includes("stability")) theoryText = "Measures the structural balance between monthly income and standing debt obligations. High stability indicates strong repayment capacity.";
+            if(key.includes("discipline")) theoryText = "Evaluates historical repayment reliability. This heavily penalizes severe late payments (90+ days) over minor delays.";
+            if(key.includes("stress")) theoryText = "Quantifies compound financial pressure by multiplying leverage ratio with total credit dependency.";
+            if(key.includes("experience")) theoryText = "Measures portfolio depth. A longer, more diverse credit history generally predicts more stable future behavior.";
+            if(key.includes("utilization")) theoryText = "Measures aggressive credit usage. Maxing out available revolving credit is a strong early indicator of financial distress.";
+
+            html += `
+            <div class="micro-card">
+                <div class="mc-header">
+                    <h4>${title}</h4>
+                    <div class="mc-result">${bc[key].result}</div>
+                </div>
+                <p class="mc-theory">${theoryText}</p>
+                
+                <div class="mc-math-box">
+                    <div class="math-row">
+                        <span class="math-label">Mathematical Formula</span>
+                        <div class="math-code">${bc[key].formula}</div>
+                    </div>
+                    <div class="math-row">
+                        <span class="math-label">Telemetry Mapped</span>
+                        <div class="math-code">${bc[key].substitution}</div>
+                    </div>
+                </div>
+                
+                <div class="mc-interp">
+                    <strong>AI Assessment:</strong> ${bc[key].interpretation}
+                </div>
+            </div>`;
+        }
+        document.getElementById("behaviorCalc").innerHTML = html;
+
+        // ===== STEP 3: MODEL =====
+        document.getElementById("modelName").innerText = result.model_prediction.model_name;
+        document.getElementById("baseRisk").innerText = (result.model_prediction.base_default_probability * 100).toFixed(2) + "%";
+
+        // ===== STEP 4: RULE ENGINE =====
+        const rules = result.rule_engine.rules_evaluated;
+        const list = document.getElementById("ruleList");
+        list.innerHTML = "";
+
+        if (rules.length === 0) {
+            list.innerHTML = "<li>No rule adjustments applied based on current thresholds.</li>";
+        } else {
+            rules.forEach(r => {
+                const li = document.createElement("li");
+                li.innerHTML = `<div><strong>${r.rule}</strong><br><span style="font-size:13px; color:var(--text-muted); font-weight:500;">${r.reason}</span></div> <span style="color:var(--accent); font-weight:800; font-size:16px;">${r.risk_adjustment || ""}</span>`;
+                list.appendChild(li);
+            });
+        }
+        document.getElementById("adjustedRisk").innerText = (result.rule_engine.adjusted_risk * 100).toFixed(2) + "%";
+
+        // ===== STEP 5: FINAL =====
+        document.getElementById("finalScore").innerText = result.final_decision.credit_score;
+        document.getElementById("decisionSummary").innerText = result.final_decision.decision_summary;
+
+        // ===== STEP 6: SHAP EXPLANATION (CHART & LIST) =====
+        const shapList = document.getElementById("shapList");
+        shapList.innerHTML = "";
+        
+        const shapLabels = [];
+        const shapData = [];
+        const shapColors = [];
+
+        if (result.shap_explanation && result.shap_explanation.length > 0) {
+            
+            result.shap_explanation.forEach(s => {
+                const impactVal = parseFloat(s.impact);
+                const colorHex = impactVal > 0 ? '#d9381e' : '#56B33B'; 
+                
+                const li = document.createElement("li");
+                li.innerHTML = `<div><strong>${s.feature}</strong><br><span style="font-size:13px; color:var(--text-muted); font-weight:500;">${s.effect}</span></div> <span style="color:${colorHex}; font-weight:800; font-size:16px;">${s.impact}</span>`;
+                shapList.appendChild(li);
+
+                shapLabels.push(s.feature);
+                shapData.push(impactVal);
+                shapColors.push(colorHex);
+            });
+
+            const ctxShap = document.getElementById("shapLocalChart").getContext("2d");
+            if (window.shapChartInstance) window.shapChartInstance.destroy();
+
+            Chart.defaults.font.family = "'Manrope', sans-serif";
+            
+            window.shapChartInstance = new Chart(ctxShap, {
+                type: 'bar',
+                data: {
+                    labels: shapLabels,
+                    datasets: [{
+                        label: 'Impact on Default Risk',
+                        data: shapData,
+                        backgroundColor: shapColors,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', 
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let val = context.raw;
+                                    return (val > 0 ? '+' : '') + val.toFixed(4) + ' Risk Impact';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#eaeaea', drawBorder: false },
+                            ticks: { font: { weight: '600', color: '#5a5a5a' } }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { font: { weight: '700', color: '#0a0a0a' } }
+                        }
+                    }
+                }
+            });
+
+        } else {
+            shapList.innerHTML = "<li>No SHAP explanations returned for this payload.</li>";
+            if (window.shapChartInstance) window.shapChartInstance.destroy();
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Request failed. Please ensure the Django server is running and the API endpoint is accessible.");
+    }
+});
+</script>
+{% endblock %}

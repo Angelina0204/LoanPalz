@@ -1,0 +1,8 @@
+{
+    "v1": {
+        "model_file": "credit_model_v1.pkl",
+        "date": "2026-03-08",
+        "training_size": 150000,
+        "features": 15
+    }
+}
